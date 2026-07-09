@@ -3,17 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Meu Controle Diário</title>
+<title>Lembrou</title>
 <meta name="theme-color" content="#7C1D3A">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Controle Diário">
+<meta name="apple-mobile-web-app-title" content="Lembrou">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#FAF5F6;
@@ -25,11 +25,16 @@
   --primary-ink:#5C142B;
   --primary-soft:#F6E3E9;
   --primary-mid:#C4798F;
+  --grad:linear-gradient(135deg,#7C1D3A 0%,#A34460 100%);
   --amber:#9A5B0B;
   --amber-soft:#FCF0DA;
-  --amber-line:#F0D9AC;
   --gray:#5E6B74;
   --gray-soft:#E9EEF1;
+  --c-med1:#7C1D3A;
+  --c-med2:#A34460;
+  --c-cafe:#C98A2B;
+  --c-almoco:#2E7D6B;
+  --c-jantar:#4C5FA3;
   --radius:18px;
   --shadow:0 1px 2px rgba(43,26,32,.05),0 6px 18px rgba(43,26,32,.07);
   font-size:16px;
@@ -47,35 +52,61 @@ body{
 h1,h2,h3,.num,.clock{font-family:'Sora','Manrope',sans-serif}
 
 /* Header */
-.header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
-.header h1{font-size:1.25rem;font-weight:700;letter-spacing:-.02em}
-.header .date{color:var(--muted);font-size:.85rem;font-weight:500;text-transform:capitalize;margin-top:2px}
+.header{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:14px}
+.brand{font-family:'Sora';font-size:.7rem;font-weight:800;letter-spacing:.22em;color:var(--primary);text-transform:uppercase}
+.header h1{font-size:2rem;font-weight:800;letter-spacing:-.03em;line-height:1.05;margin-top:2px}
+.header .date{color:var(--muted);font-size:.85rem;font-weight:600;text-transform:capitalize;margin-top:4px}
 .ring{position:relative;width:64px;height:64px;flex:none}
 .ring svg{transform:rotate(-90deg)}
 .ring .val{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Sora';font-weight:700;font-size:.8rem;color:var(--primary-ink)}
 
+/* Semana (chips de dias) */
+.week{display:flex;gap:6px;margin-bottom:14px}
+.wday{flex:1;text-align:center;border-radius:14px;padding:9px 0 8px;background:#fff;border:1px solid var(--line);cursor:pointer;user-select:none;transition:.15s}
+.wday .dw{display:block;font-size:.62rem;font-weight:700;color:var(--muted);text-transform:lowercase}
+.wday .dn{display:block;font-family:'Sora';font-size:.95rem;font-weight:700;margin-top:1px}
+.wday.full{background:var(--grad);border-color:transparent;color:#fff}
+.wday.full .dw{color:rgba(255,255,255,.85)}
+.wday.today{outline:2px solid var(--primary);outline-offset:1px}
+.wday:active{transform:scale(.95)}
+
+/* Hero: resumo do dia (substitui o banner de pendências) */
+.hero{background:var(--card);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);padding:16px;margin-bottom:14px}
+.hero .tt{font-family:'Sora';font-size:1.05rem;font-weight:700}
+.hero .sub{font-size:.85rem;color:var(--muted);font-weight:600;margin-top:2px}
+.hero .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.chip{display:inline-flex;align-items:center;gap:7px;background:var(--primary-soft);color:var(--primary-ink);border:none;border-radius:99px;padding:9px 14px;font-weight:700;font-size:.82rem;cursor:pointer}
+.chip:active{transform:scale(.96)}
+.chip .plus{font-size:.9rem;opacity:.7}
+.hero.done{background:var(--grad);border-color:transparent;color:#fff}
+.hero.done .tt,.hero.done .sub{color:#fff}
+.hero.done .sub{opacity:.9}
+.hero .progressbar{margin-top:12px}
+.hero.done .progressbar{background:rgba(255,255,255,.25)}
+.hero.done .progressbar div{background:#fff}
+
 /* Cards */
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-bottom:14px}
-.card h2{font-size:1rem;font-weight:600;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+.card h2{font-size:1rem;font-weight:700;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
 .card h2 .tag{font-family:'Manrope';font-size:.8rem;font-weight:700;color:var(--primary-ink);background:var(--primary-soft);padding:3px 10px;border-radius:99px}
 
-/* Pendências banner */
-.pend{background:var(--amber-soft);border:1px solid var(--amber-line);border-radius:var(--radius);padding:14px 16px;margin-bottom:14px}
-.pend .tt{display:flex;align-items:center;gap:8px;font-family:'Sora';font-weight:600;font-size:.95rem;color:var(--amber)}
-.pend ul{list-style:none;margin-top:8px;display:flex;flex-direction:column;gap:4px}
-.pend li{font-size:.9rem;color:#6B4A14;font-weight:600}
-.pend li span{color:#96742F;font-weight:500}
-.pend.ok{background:var(--primary-soft);border-color:#EBCBD5}
-.pend.ok .tt{color:var(--primary-ink)}
-.pend.ok li span{color:#8A5568}
+/* icon chip */
+.icochip{width:40px;height:40px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:1.15rem;flex:none}
+.ic-med1{background:#F6E3E9}
+.ic-med2{background:#F4E6EB}
+.ic-cafe{background:#FBF0DD}
+.ic-almoco{background:#E2F0EC}
+.ic-jantar{background:#E6E9F5}
+.ic-task{background:#F1ECEE}
 
 /* Medicamento */
-.med{border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:10px}
+.med{border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:10px;background:#FDFBFB}
 .med:last-child{margin-bottom:0}
-.med .top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
-.med .name{font-weight:700;font-size:1rem}
-.med .plan{color:var(--muted);font-size:.83rem;margin-top:2px}
-.pill{font-size:.75rem;font-weight:700;padding:4px 11px;border-radius:99px;white-space:nowrap}
+.med .top{display:flex;align-items:flex-start;gap:11px}
+.med .top>div:nth-child(2){flex:1}
+.med .name{font-weight:700;font-size:.98rem}
+.med .plan{color:var(--muted);font-size:.8rem;margin-top:1px;font-weight:600}
+.pill{font-size:.72rem;font-weight:700;padding:4px 11px;border-radius:99px;white-space:nowrap}
 .pill.pendente{background:var(--amber-soft);color:var(--amber)}
 .pill.tomado{background:var(--primary-soft);color:var(--primary-ink)}
 .pill.esquecido{background:var(--gray-soft);color:var(--gray)}
@@ -99,21 +130,20 @@ input:focus,textarea:focus{outline:2px solid var(--primary);outline-offset:1px;b
 
 /* Refeições */
 .meals{display:flex;flex-direction:column;gap:10px}
-.meal{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:14px;padding:14px;background:#FDFBFB;cursor:pointer;user-select:none}
-.meal .box{width:26px;height:26px;border-radius:9px;border:2px solid #DCC4CC;display:flex;align-items:center;justify-content:center;flex:none;background:#fff;color:#fff;font-size:.85rem;transition:.15s}
+.meal{display:flex;align-items:center;gap:11px;border:1px solid var(--line);border-radius:16px;padding:11px 14px;background:#FDFBFB;cursor:pointer;user-select:none}
+.meal .box{width:28px;height:28px;border-radius:99px;border:2px solid #DCC4CC;display:flex;align-items:center;justify-content:center;flex:none;background:#fff;color:#fff;font-size:.85rem;transition:.15s;margin-left:auto}
 .meal.done{background:var(--primary-soft);border-color:#EBCBD5}
 .meal.done .box{background:var(--primary);border-color:var(--primary)}
 .meal .lbl{font-weight:700;font-size:.95rem}
-.meal .ico{margin-left:auto;font-size:1.1rem;opacity:.85}
 .progressbar{height:8px;background:#F0E4E8;border-radius:99px;overflow:hidden;margin-top:12px}
 .progressbar div{height:100%;background:var(--primary);border-radius:99px;transition:width .3s ease}
 
 /* Tarefas */
 .taskadd{display:flex;gap:8px;margin-bottom:10px}
 .taskadd input{flex:1}
-.task{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:14px;padding:12px 14px;background:#FDFBFB;margin-bottom:8px}
+.task{display:flex;align-items:center;gap:11px;border:1px solid var(--line);border-radius:16px;padding:10px 14px;background:#FDFBFB;margin-bottom:8px}
 .task:last-child{margin-bottom:0}
-.task .box{width:24px;height:24px;border-radius:99px;border:2px solid #DCC4CC;display:flex;align-items:center;justify-content:center;flex:none;background:#fff;color:#fff;font-size:.75rem;cursor:pointer;transition:.15s}
+.task .box{width:26px;height:26px;border-radius:99px;border:2px solid #DCC4CC;display:flex;align-items:center;justify-content:center;flex:none;background:#fff;color:#fff;font-size:.75rem;cursor:pointer;transition:.15s}
 .task.done{background:var(--primary-soft);border-color:#EBCBD5}
 .task.done .box{background:var(--primary);border-color:var(--primary)}
 .task.done .txt{text-decoration:line-through;color:var(--muted)}
@@ -138,7 +168,7 @@ textarea{width:100%;min-height:110px;padding:13px;border:1px solid var(--line);b
 .saved{font-size:.75rem;color:var(--primary-ink);font-weight:600;margin-top:6px;min-height:1em;opacity:0;transition:opacity .2s}
 .saved.show{opacity:1}
 
-/* Dashboard */
+/* Progresso */
 .seg{display:flex;background:#F0E4E8;border-radius:14px;padding:4px;margin-bottom:14px}
 .seg button{flex:1;padding:10px;border-radius:11px;background:none;font-weight:700;font-size:.85rem;color:var(--muted)}
 .seg button.active{background:#fff;color:var(--primary-ink);box-shadow:var(--shadow)}
@@ -155,6 +185,15 @@ textarea{width:100%;min-height:110px;padding:13px;border:1px solid var(--line);b
 .chart{width:100%;display:block}
 .legend{font-size:.72rem;color:var(--muted);margin-top:8px}
 
+/* Sua semana: grade de bolinhas */
+.dots{display:flex;flex-direction:column;gap:9px}
+.dotrow{display:grid;grid-template-columns:1fr repeat(7,24px);gap:4px;align-items:center}
+.dotrow .dl{display:flex;align-items:center;gap:8px;font-size:.82rem;font-weight:700;min-width:0}
+.dotrow .dl span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dotrow .dl .mini{width:24px;height:24px;border-radius:8px;font-size:.75rem;display:flex;align-items:center;justify-content:center;flex:none}
+.dot{width:13px;height:13px;border-radius:99px;justify-self:center;background:#F0E4E8}
+.dothdr{font-size:.62rem;font-weight:700;color:var(--muted);text-align:center;text-transform:lowercase}
+
 /* Histórico */
 .day{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:10px;overflow:hidden}
 .day summary{list-style:none;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-weight:700;font-size:.92rem}
@@ -167,7 +206,6 @@ textarea{width:100%;min-height:110px;padding:13px;border:1px solid var(--line);b
 .empty{color:var(--muted);text-align:center;font-size:.9rem;padding:26px 10px}
 .retrofield{display:flex;gap:8px}
 .retrofield input{flex:1}
-#retroEditor .med{background:#FDFBFB}
 
 /* Ajustes */
 .field{margin-bottom:14px}
@@ -193,7 +231,7 @@ code.url{display:block;background:#F7EFF1;border:1px solid var(--line);border-ra
 .screen.active{display:block;animation:fade .18s ease}
 @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
-button:focus-visible,.meal:focus-visible,summary:focus-visible,.task .box:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+button:focus-visible,.meal:focus-visible,summary:focus-visible,.task .box:focus-visible,.wday:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
 </style>
 </head>
 <body>
@@ -201,7 +239,8 @@ button:focus-visible,.meal:focus-visible,summary:focus-visible,.task .box:focus-
 
   <div class="header">
     <div>
-      <h1>Meu Controle Diário</h1>
+      <div class="brand">Lembrou</div>
+      <h1>Hoje.</h1>
       <div class="date" id="hdrDate"></div>
     </div>
     <div class="ring" title="Progresso do dia">
@@ -214,9 +253,11 @@ button:focus-visible,.meal:focus-visible,summary:focus-visible,.task .box:focus-
     </div>
   </div>
 
+  <div class="week" id="weekStrip"></div>
+
   <!-- ===== HOJE ===== -->
   <section class="screen active" id="screen-hoje">
-    <div id="pendBanner"></div>
+    <div id="heroCard"></div>
 
     <div class="card">
       <h2>Medicamentos <span class="tag" id="medTag">0/2</span></h2>
@@ -277,11 +318,17 @@ button:focus-visible,.meal:focus-visible,summary:focus-visible,.task .box:focus-
     </div>
   </section>
 
-  <!-- ===== DASHBOARD ===== -->
+  <!-- ===== PROGRESSO ===== -->
   <section class="screen" id="screen-dash">
     <div class="grid2" id="statCards"></div>
 
-    <div class="seg" role="tablist" aria-label="Período do dashboard">
+    <div class="card">
+      <h2>Sua semana <span class="tag">7 dias</span></h2>
+      <div class="dots" id="weekDots"></div>
+      <div class="legend">Bolinha cheia = feito naquele dia.</div>
+    </div>
+
+    <div class="seg" role="tablist" aria-label="Período do progresso">
       <button class="active" data-p="semana">Semana</button>
       <button data-p="mes">Mês</button>
       <button data-p="ano">Ano</button>
@@ -316,7 +363,7 @@ button:focus-visible,.meal:focus-visible,summary:focus-visible,.task .box:focus-
         <input type="date" id="retroDate">
         <button class="btn btn-primary" style="flex:none;min-width:0" id="retroOpen">Abrir dia</button>
       </div>
-      <div class="hint">Escolha uma data passada para registrar ou corrigir medicamentos, refeições, tarefas e anotação.</div>
+      <div class="hint">Escolha uma data passada para registrar ou corrigir medicamentos, refeições, tarefas e anotação. Dica: você também pode tocar em um dia na faixa da semana, lá em cima.</div>
       <div id="retroEditor" style="margin-top:12px"></div>
     </div>
     <div id="histList"></div>
@@ -354,14 +401,14 @@ button:focus-visible,.meal:focus-visible,summary:focus-visible,.task .box:focus-
     </div>
   </section>
 
-  <p class="disclaimer">Este app é apenas para acompanhamento pessoal e não substitui orientação médica. Em caso de dúvidas sobre seus medicamentos, fale com um profissional de saúde.</p>
+  <p class="disclaimer">O Lembrou é apenas para acompanhamento pessoal e não substitui orientação médica. Em caso de dúvidas sobre seus medicamentos, fale com um profissional de saúde.</p>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <nav class="tabbar">
   <button class="tab active" data-screen="hoje"><span class="ico">☀️</span>Hoje</button>
-  <button class="tab" data-screen="dash"><span class="ico">📊</span>Dashboard</button>
+  <button class="tab" data-screen="dash"><span class="ico">📈</span>Progresso</button>
   <button class="tab" data-screen="hist"><span class="ico">🗓️</span>Histórico</button>
   <button class="tab" data-screen="config"><span class="ico">⚙️</span>Ajustes</button>
 </nav>
@@ -373,11 +420,13 @@ var KEY='meuControleDiario:v1';
 var CRON_KEY='meuControleDiario:cron';
 var TIMER_KEY='meuControleDiario:timer';
 var MEALS=[
-  {id:'cafe',   lbl:'Café da manhã', ico:'☕'},
-  {id:'almoco', lbl:'Almoço',        ico:'🍽️'},
-  {id:'jantar', lbl:'Jantar',        ico:'🌙'}
+  {id:'cafe',   lbl:'Café da manhã', ico:'☕', cls:'ic-cafe',   color:'#C98A2B'},
+  {id:'almoco', lbl:'Almoço',        ico:'🍽️', cls:'ic-almoco', color:'#2E7D6B'},
+  {id:'jantar', lbl:'Jantar',        ico:'🌙', cls:'ic-jantar', color:'#4C5FA3'}
 ];
+var MED_STYLE={m1:{cls:'ic-med1',color:'#7C1D3A'},m2:{cls:'ic-med2',color:'#A34460'}};
 var MONTH_LBL=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+var WD=['dom','seg','ter','qua','qui','sex','sáb'];
 
 /* ---------- estado ---------- */
 function defaultState(){
@@ -435,6 +484,14 @@ function medsTaken(k){
   var n=0; state.meds.forEach(function(m){
     var l=day.medLogs[m.id]; if(l&&l.status==='tomado') n++;
   }); return n;
+}
+function medTakenOn(k,id){
+  var day=state.days[k];
+  return !!(day&&day.medLogs[id]&&day.medLogs[id].status==='tomado');
+}
+function mealDoneOn(k,id){
+  var day=state.days[k];
+  return !!(day&&day.meals&&day.meals[id]);
 }
 function mealsDone(k){
   var day=state.days[k]; if(!day) return 0;
@@ -500,8 +557,18 @@ window.addTaskRetro=function(k){
   var inp=document.getElementById('taskInputRetro');
   if(inp){ addTask(k,inp.value); }
 };
+/* checks rápidos do resumo do dia */
+window.quickDone=function(type,id){
+  var k=todayKey();
+  if(type==='med'){ window.takeNow(k,id); toast('💊 '+medOf(id).name+' · tomei agora ✓'); return; }
+  if(type==='meal'){ getDay(k).meals[id]=true; save(); renderAll(); return; }
+  if(type==='task'){
+    var t=tasksOf(k).filter(function(x){return x.id===id;})[0];
+    if(t){ t.done=true; save(); renderAll(); }
+  }
+};
 
-/* ---------- render: hoje ---------- */
+/* ---------- render: cabeçalho + semana ---------- */
 var STATUS_LBL={pendente:'Pendente',tomado:'Tomado',esquecido:'Esquecido'};
 
 function renderHeader(){
@@ -515,32 +582,69 @@ function renderHeader(){
   document.getElementById('ringVal').textContent=pct+'%';
 }
 
-function renderPend(){
-  var k=todayKey(), day=getDay(k);
-  var pendMeds=state.meds.filter(function(m){return day.medLogs[m.id].status==='pendente';});
-  var pendTasks=tasksOf(k).filter(function(t){return !t.done;});
-  var el=document.getElementById('pendBanner');
-  if(pendMeds.length===0 && pendTasks.length===0){
-    el.innerHTML='<div class="pend ok"><div class="tt">✅ Pendências de hoje: nenhuma!</div>'+
-      '<ul><li><span>Medicamentos e tarefas de hoje já foram registrados.</span></li></ul></div>';
-    return;
-  }
-  var items='';
-  pendMeds.forEach(function(m){
-    items+='<li>💊 '+esc(m.name)+' <span>— planejado para '+esc(m.time)+'</span></li>';
-  });
-  pendTasks.slice(0,4).forEach(function(t){
-    items+='<li>☐ '+esc(t.text)+'</li>';
-  });
-  if(pendTasks.length>4) items+='<li><span>… e mais '+(pendTasks.length-4)+' tarefa(s)</span></li>';
-  el.innerHTML='<div class="pend"><div class="tt">⏰ Pendências de hoje</div><ul>'+items+'</ul></div>';
+function renderWeek(){
+  var t=todayKey();
+  document.getElementById('weekStrip').innerHTML=lastNDays(7).map(function(k){
+    var d=dateFromKey(k);
+    var cls='wday'+(isComplete(k)&&inUse(k)?' full':'')+(k===t?' today':'');
+    var action=(k===t)?'gotoTab(\'hoje\')':'openRetroFor(\''+k+'\')';
+    return '<div class="'+cls+'" role="button" tabindex="0" aria-label="'+fmtShort(k)+'" onclick="'+action+'" '+
+      'onkeydown="if(event.key===\'Enter\'){'+action+'}">'+
+      '<span class="dw">'+WD[d.getDay()]+'</span><span class="dn">'+d.getDate()+'</span></div>';
+  }).join('');
 }
 
+/* ---------- resumo do dia (hero) ---------- */
+function renderHero(){
+  var k=todayKey(), day=getDay(k);
+  var pendMeds=state.meds.filter(function(m){return day.medLogs[m.id].status==='pendente';});
+  var pendMeals=MEALS.filter(function(m){return !day.meals[m.id];});
+  var pendTasks=tasksOf(k).filter(function(t){return !t.done;});
+  var total=state.meds.length+3+tasksOf(k).length;
+  var done=medsTaken(k)+mealsDone(k)+tasksDone(k);
+  var pct=total?Math.round(done/total*100):0;
+  var el=document.getElementById('heroCard');
+
+  if(pendMeds.length===0 && pendMeals.length===0 && pendTasks.length===0){
+    var streak=0, d=new Date();
+    while(inUse(keyOf(d)) && isComplete(keyOf(d))){streak++;d.setDate(d.getDate()-1);}
+    el.innerHTML='<div class="hero done"><div class="tt">Tudo feito por hoje! 🎉</div>'+
+      '<div class="sub">'+(streak>1?('Você está numa sequência de '+streak+' dias completos 🔥'):'Dia completo — continue assim!')+'</div>'+
+      '<div class="progressbar"><div style="width:100%"></div></div></div>';
+    return;
+  }
+
+  var tt, sub;
+  var falta=total-done;
+  if(done===0){ tt='Vamos começar? ☀️'; sub='Você tem '+total+' itens para hoje.'; }
+  else if(pct>=60){ tt='Quase lá! ✨'; sub='Falta'+(falta>1?'m':'')+' só '+falta+' item'+(falta>1?'s':'')+' para fechar o dia.'; }
+  else { tt='Bom ritmo! 💪'; sub='Falta'+(falta>1?'m':'')+' '+falta+' item'+(falta>1?'s':'')+' — toque para dar check.'; }
+
+  var chips='';
+  pendMeds.forEach(function(m){
+    chips+='<button class="chip" onclick="quickDone(\'med\',\''+m.id+'\')" aria-label="Marcar '+esc(m.name)+' como tomado">💊 '+esc(m.name)+' <span class="plus">tomei ✓</span></button>';
+  });
+  pendMeals.forEach(function(m){
+    chips+='<button class="chip" onclick="quickDone(\'meal\',\''+m.id+'\')" aria-label="Marcar '+m.lbl+'">'+m.ico+' '+m.lbl+' <span class="plus">✓</span></button>';
+  });
+  pendTasks.slice(0,3).forEach(function(t){
+    chips+='<button class="chip" onclick="quickDone(\'task\',\''+t.id+'\')" aria-label="Concluir tarefa">✔︎ '+esc(t.text)+'</button>';
+  });
+  if(pendTasks.length>3) chips+='<span class="chip" style="cursor:default;opacity:.7">+'+(pendTasks.length-3)+' tarefas</span>';
+
+  el.innerHTML='<div class="hero"><div class="tt">'+tt+'</div><div class="sub">'+sub+'</div>'+
+    '<div class="chips">'+chips+'</div>'+
+    '<div class="progressbar"><div style="width:'+pct+'%"></div></div></div>';
+}
+
+/* ---------- render: hoje ---------- */
 function medCardHtml(k,m){
   var day=getDay(k);
   var l=day.medLogs[m.id];
   var st=(k<todayKey())?effStatus(k,l):l.status;
-  var html='<div class="med"><div class="top"><div>'+
+  var stl=MED_STYLE[m.id]||MED_STYLE.m1;
+  var html='<div class="med"><div class="top">'+
+    '<div class="icochip '+stl.cls+'">💊</div><div>'+
     '<div class="name">'+esc(m.name)+'</div>'+
     '<div class="plan">Planejado para '+esc(l.planned||m.time)+'</div></div>'+
     '<span class="pill '+st+'">'+STATUS_LBL[st]+'</span></div>';
@@ -596,7 +700,7 @@ function renderMeals(){
     var done=day.meals[m.id];
     return '<div class="meal'+(done?' done':'')+'" role="checkbox" tabindex="0" aria-checked="'+done+'" '+
       'onclick="toggleMeal(\''+k+'\',\''+m.id+'\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();toggleMeal(\''+k+'\',\''+m.id+'\')}">'+
-      '<div class="box">'+(done?'✓':'')+'</div><div class="lbl">'+m.lbl+'</div><div class="ico">'+m.ico+'</div></div>';
+      '<div class="icochip '+m.cls+'">'+m.ico+'</div><div class="lbl">'+m.lbl+'</div><div class="box">'+(done?'✓':'')+'</div></div>';
   }).join('');
 }
 
@@ -656,7 +760,7 @@ document.getElementById('cronReset').addEventListener('click',function(){
   cronSave(); cronRender();
 });
 
-/* ---------- timer (contagem regressiva) ---------- */
+/* ---------- timer ---------- */
 var timer={target:0,running:false,fired:false};
 try{ var t=JSON.parse(localStorage.getItem(TIMER_KEY)); if(t) timer=t; }catch(e){}
 function timerSave(){ try{ localStorage.setItem(TIMER_KEY,JSON.stringify(timer)); }catch(e){} }
@@ -731,10 +835,9 @@ setInterval(function(){
   if(timer.running) timerRender();
 },250);
 
-/* ---------- dashboard ---------- */
+/* ---------- progresso ---------- */
 var period='semana';
 var PERIOD_LBL={semana:'Semana',mes:'Mês',ano:'Ano'};
-var weekLbl=['dom','seg','ter','qua','qui','sex','sáb'];
 
 function periodDays(){
   if(period==='semana') return lastNDays(7);
@@ -745,7 +848,7 @@ function buckets(){
   var keys=periodDays();
   if(period!=='ano'){
     return keys.map(function(k){
-      return { lbl: period==='semana'?weekLbl[dateFromKey(k).getDay()]:'', days:[k] };
+      return { lbl: period==='semana'?WD[dateFromKey(k).getDay()]:'', days:[k] };
     });
   }
   var map={},order=[];
@@ -785,6 +888,34 @@ function barChart(svgId,data,maxVal,opts){
   });
   svg.innerHTML=h;
 }
+
+function renderWeekDots(){
+  var days=lastNDays(7);
+  var hdr='<div class="dotrow"><div></div>'+days.map(function(k){
+    return '<div class="dothdr">'+WD[dateFromKey(k).getDay()]+'</div>';
+  }).join('')+'</div>';
+
+  function row(lbl,ico,cls,color,fn){
+    return '<div class="dotrow"><div class="dl"><div class="mini '+cls+'">'+ico+'</div><span>'+esc(lbl)+'</span></div>'+
+      days.map(function(k){
+        var st;
+        if(!inUse(k)) st='background:#F7F0F2';
+        else if(fn(k)) st='background:'+color;
+        else st='background:#F0E4E8';
+        return '<div class="dot" style="'+st+'"></div>';
+      }).join('')+'</div>';
+  }
+  var html=hdr;
+  state.meds.forEach(function(m){
+    var stl=MED_STYLE[m.id]||MED_STYLE.m1;
+    html+=row(m.name,'💊',stl.cls,stl.color,function(k){return medTakenOn(k,m.id);});
+  });
+  MEALS.forEach(function(m){
+    html+=row(m.lbl,m.ico,m.cls,m.color,function(k){return mealDoneOn(k,m.id);});
+  });
+  document.getElementById('weekDots').innerHTML=html;
+}
+
 function renderDash(){
   var k=todayKey();
   var pendToday=state.meds.filter(function(m){return getDay(k).medLogs[m.id].status==='pendente';}).length;
@@ -802,6 +933,8 @@ function renderDash(){
   document.getElementById('statCards').innerHTML=cards.map(function(c){
     return '<div class="stat '+c.cls+(c.wide?' wide':'')+'"><div class="num">'+c.n+'</div><div class="lbl">'+c.lbl+'</div></div>';
   }).join('');
+
+  renderWeekDots();
 
   ['tagAd','tagMeals','tagFull'].forEach(function(id){
     document.getElementById(id).textContent=PERIOD_LBL[period];
@@ -869,7 +1002,7 @@ function renderRetro(){
   html+=MEALS.map(function(m){
     var done=day.meals[m.id];
     return '<div class="meal'+(done?' done':'')+'" role="checkbox" tabindex="0" aria-checked="'+done+'" onclick="toggleMeal(\''+k+'\',\''+m.id+'\')">'+
-      '<div class="box">'+(done?'✓':'')+'</div><div class="lbl">'+m.lbl+'</div><div class="ico">'+m.ico+'</div></div>';
+      '<div class="icochip '+m.cls+'">'+m.ico+'</div><div class="lbl">'+m.lbl+'</div><div class="box">'+(done?'✓':'')+'</div></div>';
   }).join('');
   html+='</div>';
   html+='<div style="margin:12px 0 6px;font-weight:700;font-size:.85rem;color:var(--muted)">Tarefas</div>';
@@ -882,7 +1015,7 @@ function renderRetro(){
   el.innerHTML=html;
 }
 
-/* ---------- render: histórico ---------- */
+/* ---------- histórico ---------- */
 function renderHist(){
   var keys=Object.keys(state.days).sort().reverse();
   var el=document.getElementById('histList');
@@ -913,9 +1046,25 @@ function renderHist(){
       '</div></details>';
   }).join('');
 }
+
+/* ---------- navegação ---------- */
+window.gotoTab=function(name){
+  document.querySelectorAll('.tab').forEach(function(x){
+    x.classList.toggle('active',x.dataset.screen===name);
+  });
+  document.querySelectorAll('.screen').forEach(function(x){x.classList.remove('active');});
+  document.getElementById('screen-'+name).classList.add('active');
+  if(name==='dash') renderDash();
+  if(name==='hist'){ renderHist(); renderRetro(); }
+};
+document.querySelectorAll('.tab').forEach(function(t){
+  t.addEventListener('click',function(){ gotoTab(t.dataset.screen); });
+});
 window.openRetroFor=function(k){
+  if(k===todayKey()){ gotoTab('hoje'); return; }
   document.getElementById('retroDate').value=k;
   retroKey=k; getDay(k); save();
+  gotoTab('hist');
   renderRetro();
   window.scrollTo({top:0,behavior:'smooth'});
 };
@@ -968,21 +1117,9 @@ document.getElementById('exportCsv').addEventListener('click',function(){
   var blob=new Blob(['\uFEFF'+rows.join('\r\n')],{type:'text/csv;charset=utf-8'});
   var a=document.createElement('a');
   a.href=URL.createObjectURL(blob);
-  a.download='meu-controle-diario-'+todayKey()+'.csv';
+  a.download='lembrou-'+todayKey()+'.csv';
   document.body.appendChild(a); a.click();
   setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},300);
-});
-
-/* ---------- navegação ---------- */
-document.querySelectorAll('.tab').forEach(function(t){
-  t.addEventListener('click',function(){
-    document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active');});
-    document.querySelectorAll('.screen').forEach(function(x){x.classList.remove('active');});
-    t.classList.add('active');
-    document.getElementById('screen-'+t.dataset.screen).classList.add('active');
-    if(t.dataset.screen==='dash') renderDash();
-    if(t.dataset.screen==='hist'){ renderHist(); renderRetro(); }
-  });
 });
 
 /* ---------- toast ---------- */
@@ -1019,7 +1156,7 @@ function handleUrlActions(){
 function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 
 function renderAll(){
-  renderHeader(); renderPend(); renderMeds(); renderTasks(); renderMeals(); renderDash(); renderHist();
+  renderHeader(); renderWeek(); renderHero(); renderMeds(); renderTasks(); renderMeals(); renderDash(); renderHist();
   if(retroKey) renderRetro();
 }
 
