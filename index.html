@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Meu Controle Diário</title>
+<meta name="theme-color" content="#7C1D3A">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Controle Diário">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FAF5F6;
+  --card:#FFFFFF;
+  --ink:#2B1A20;
+  --muted:#7A5F67;
+  --line:#EEDFE3;
+  --primary:#7C1D3A;        /* bordô */
+  --primary-ink:#5C142B;
+  --primary-soft:#F6E3E9;
+  --primary-mid:#C4798F;
+  --amber:#9A5B0B;
+  --amber-soft:#FCF0DA;
+  --amber-line:#F0D9AC;
+  --gray:#5E6B74;
+  --gray-soft:#E9EEF1;
+  --radius:18px;
+  --shadow:0 1px 2px rgba(43,26,32,.05),0 6px 18px rgba(43,26,32,.07);
+  font-size:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:'Manrope',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+  padding-bottom:calc(84px + env(safe-area-inset-bottom));
+}
+.wrap{max-width:520px;margin:0 auto;padding:20px 16px 8px}
+h1,h2,h3,.num,.clock{font-family:'Sora','Manrope',sans-serif}
+
+/* Header */
+.header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+.header h1{font-size:1.25rem;font-weight:700;letter-spacing:-.02em}
+.header .date{color:var(--muted);font-size:.85rem;font-weight:500;text-transform:capitalize;margin-top:2px}
+.ring{position:relative;width:64px;height:64px;flex:none}
+.ring svg{transform:rotate(-90deg)}
+.ring .val{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Sora';font-weight:700;font-size:.8rem;color:var(--primary-ink)}
+
+/* Cards */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-bottom:14px}
+.card h2{font-size:1rem;font-weight:600;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+.card h2 .tag{font-family:'Manrope';font-size:.8rem;font-weight:700;color:var(--primary-ink);background:var(--primary-soft);padding:3px 10px;border-radius:99px}
+
+/* Pendências banner */
+.pend{background:var(--amber-soft);border:1px solid var(--amber-line);border-radius:var(--radius);padding:14px 16px;margin-bottom:14px}
+.pend .tt{display:flex;align-items:center;gap:8px;font-family:'Sora';font-weight:600;font-size:.95rem;color:var(--amber)}
+.pend ul{list-style:none;margin-top:8px;display:flex;flex-direction:column;gap:4px}
+.pend li{font-size:.9rem;color:#6B4A14;font-weight:600}
+.pend li span{color:#96742F;font-weight:500}
+.pend.ok{background:var(--primary-soft);border-color:#EBCBD5}
+.pend.ok .tt{color:var(--primary-ink)}
+.pend.ok li span{color:#8A5568}
+
+/* Medicamento */
+.med{border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:10px}
+.med:last-child{margin-bottom:0}
+.med .top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.med .name{font-weight:700;font-size:1rem}
+.med .plan{color:var(--muted);font-size:.83rem;margin-top:2px}
+.pill{font-size:.75rem;font-weight:700;padding:4px 11px;border-radius:99px;white-space:nowrap}
+.pill.pendente{background:var(--amber-soft);color:var(--amber)}
+.pill.tomado{background:var(--primary-soft);color:var(--primary-ink)}
+.pill.esquecido{background:var(--gray-soft);color:var(--gray)}
+.med .real{font-size:.85rem;color:var(--primary-ink);font-weight:600;margin-top:8px}
+.med .acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+button{font-family:inherit;cursor:pointer;border:none;border-radius:12px;font-weight:700;transition:transform .06s ease, background .15s}
+button:active{transform:scale(.97)}
+.btn{padding:12px 16px;font-size:.9rem}
+.btn-sm{padding:8px 12px;font-size:.8rem}
+.btn-primary{background:var(--primary);color:#fff;flex:1;min-width:130px}
+.btn-primary:hover{background:var(--primary-ink)}
+.btn-ghost{background:#F3EAEC;color:var(--ink)}
+.btn-ghost:hover{background:#ECDEE2}
+.btn-gray-ghost{background:var(--gray-soft);color:var(--gray)}
+.timebox{display:none;gap:8px;margin-top:10px;align-items:center}
+.timebox.open{display:flex}
+input[type=time],input[type=date],input[type=text],input[type=number]{padding:11px;border:1px solid var(--line);border-radius:12px;font:inherit;background:#FDFBFB;color:var(--ink)}
+input:focus,textarea:focus{outline:2px solid var(--primary);outline-offset:1px;border-color:transparent}
+.timebox input[type=time]{flex:1}
+.hint{font-size:.75rem;color:var(--muted);margin-top:6px}
+
+/* Refeições */
+.meals{display:flex;flex-direction:column;gap:10px}
+.meal{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:14px;padding:14px;background:#FDFBFB;cursor:pointer;user-select:none}
+.meal .box{width:26px;height:26px;border-radius:9px;border:2px solid #DCC4CC;display:flex;align-items:center;justify-content:center;flex:none;background:#fff;color:#fff;font-size:.85rem;transition:.15s}
+.meal.done{background:var(--primary-soft);border-color:#EBCBD5}
+.meal.done .box{background:var(--primary);border-color:var(--primary)}
+.meal .lbl{font-weight:700;font-size:.95rem}
+.meal .ico{margin-left:auto;font-size:1.1rem;opacity:.85}
+.progressbar{height:8px;background:#F0E4E8;border-radius:99px;overflow:hidden;margin-top:12px}
+.progressbar div{height:100%;background:var(--primary);border-radius:99px;transition:width .3s ease}
+
+/* Tarefas */
+.taskadd{display:flex;gap:8px;margin-bottom:10px}
+.taskadd input{flex:1}
+.task{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:14px;padding:12px 14px;background:#FDFBFB;margin-bottom:8px}
+.task:last-child{margin-bottom:0}
+.task .box{width:24px;height:24px;border-radius:99px;border:2px solid #DCC4CC;display:flex;align-items:center;justify-content:center;flex:none;background:#fff;color:#fff;font-size:.75rem;cursor:pointer;transition:.15s}
+.task.done{background:var(--primary-soft);border-color:#EBCBD5}
+.task.done .box{background:var(--primary);border-color:var(--primary)}
+.task.done .txt{text-decoration:line-through;color:var(--muted)}
+.task .txt{flex:1;font-weight:600;font-size:.92rem;cursor:pointer}
+.task .del{background:none;color:#B58A97;font-size:1rem;padding:4px 6px}
+.emptyline{color:var(--muted);font-size:.85rem;text-align:center;padding:8px 0}
+
+/* Cronômetro / Timer */
+.clock{font-size:2.4rem;font-weight:700;text-align:center;letter-spacing:.02em;color:var(--primary-ink);font-variant-numeric:tabular-nums;margin:6px 0 12px}
+.clock.small{font-size:1.9rem}
+.crow{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.laps{list-style:none;margin-top:12px;display:flex;flex-direction:column;gap:6px}
+.laps li{display:flex;justify-content:space-between;font-size:.85rem;background:#FDFBFB;border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+.laps li b{font-variant-numeric:tabular-nums}
+.laps li span{color:var(--muted)}
+.timerin{display:flex;gap:8px;align-items:center;justify-content:center;margin-bottom:10px}
+.timerin input{width:80px;text-align:center}
+.timerin label{font-size:.8rem;font-weight:700;color:var(--muted)}
+
+/* Anotação */
+textarea{width:100%;min-height:110px;padding:13px;border:1px solid var(--line);border-radius:14px;font:inherit;font-size:.92rem;resize:vertical;background:#FDFBFB;color:var(--ink)}
+.saved{font-size:.75rem;color:var(--primary-ink);font-weight:600;margin-top:6px;min-height:1em;opacity:0;transition:opacity .2s}
+.saved.show{opacity:1}
+
+/* Dashboard */
+.seg{display:flex;background:#F0E4E8;border-radius:14px;padding:4px;margin-bottom:14px}
+.seg button{flex:1;padding:10px;border-radius:11px;background:none;font-weight:700;font-size:.85rem;color:var(--muted)}
+.seg button.active{background:#fff;color:var(--primary-ink);box-shadow:var(--shadow)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px}
+.stat.wide{grid-column:1/-1}
+.stat .num{font-size:1.7rem;font-weight:700;letter-spacing:-.02em}
+.stat .lbl{font-size:.78rem;color:var(--muted);font-weight:600;margin-top:2px}
+.stat.green .num{color:var(--primary-ink)}
+.stat.amber .num{color:var(--amber)}
+.bigpct{display:flex;align-items:baseline;gap:8px;margin-bottom:10px}
+.bigpct .num{font-size:2rem;font-weight:700;color:var(--primary-ink)}
+.bigpct span{font-size:.8rem;color:var(--muted);font-weight:600}
+.chart{width:100%;display:block}
+.legend{font-size:.72rem;color:var(--muted);margin-top:8px}
+
+/* Histórico */
+.day{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:10px;overflow:hidden}
+.day summary{list-style:none;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-weight:700;font-size:.92rem}
+.day summary::-webkit-details-marker{display:none}
+.day summary .mini{display:flex;gap:6px;align-items:center;font-size:.72rem;font-weight:700}
+.day .body{border-top:1px solid var(--line);padding:14px 16px;font-size:.88rem}
+.day .row{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px dashed var(--line)}
+.day .row:last-of-type{border-bottom:none}
+.day .note{margin-top:10px;background:#FBF6F7;border-radius:12px;padding:11px;color:#553A43;white-space:pre-wrap}
+.empty{color:var(--muted);text-align:center;font-size:.9rem;padding:26px 10px}
+.retrofield{display:flex;gap:8px}
+.retrofield input{flex:1}
+#retroEditor .med{background:#FDFBFB}
+
+/* Ajustes */
+.field{margin-bottom:14px}
+.field label{display:block;font-size:.8rem;font-weight:700;color:var(--muted);margin-bottom:6px}
+.field input{width:100%}
+.rowfields{display:flex;gap:10px}
+.rowfields .field{flex:1}
+code.url{display:block;background:#F7EFF1;border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-size:.74rem;word-break:break-all;margin-top:6px;color:#5C3A47}
+
+/* Toast */
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(100px + env(safe-area-inset-bottom));background:var(--ink);color:#fff;padding:11px 20px;border-radius:99px;font-size:.85rem;font-weight:600;opacity:0;transition:opacity .25s;pointer-events:none;z-index:50;max-width:90%;text-align:center}
+.toast.show{opacity:1}
+
+/* Disclaimer */
+.disclaimer{font-size:.72rem;color:#B08F9A;text-align:center;padding:10px 24px 4px;line-height:1.5}
+
+/* Tab bar */
+.tabbar{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:8px 6px calc(8px + env(safe-area-inset-bottom))}
+.tab{background:none;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:.68rem;font-weight:700;color:#B08F9A;padding:6px 14px;border-radius:12px}
+.tab .ico{font-size:1.25rem;line-height:1}
+.tab.active{color:var(--primary-ink);background:var(--primary-soft)}
+.screen{display:none}
+.screen.active{display:block;animation:fade .18s ease}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+button:focus-visible,.meal:focus-visible,summary:focus-visible,.task .box:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <div>
+      <h1>Meu Controle Diário</h1>
+      <div class="date" id="hdrDate"></div>
+    </div>
+    <div class="ring" title="Progresso do dia">
+      <svg width="64" height="64" viewBox="0 0 64 64">
+        <circle cx="32" cy="32" r="27" fill="none" stroke="#F0E4E8" stroke-width="7"/>
+        <circle id="ringFg" cx="32" cy="32" r="27" fill="none" stroke="#7C1D3A" stroke-width="7"
+          stroke-linecap="round" stroke-dasharray="169.6" stroke-dashoffset="169.6"/>
+      </svg>
+      <div class="val" id="ringVal">0%</div>
+    </div>
+  </div>
+
+  <!-- ===== HOJE ===== -->
+  <section class="screen active" id="screen-hoje">
+    <div id="pendBanner"></div>
+
+    <div class="card">
+      <h2>Medicamentos <span class="tag" id="medTag">0/2</span></h2>
+      <div id="medList"></div>
+    </div>
+
+    <div class="card">
+      <h2>Tarefas do dia <span class="tag" id="taskTag">0/0</span></h2>
+      <div class="taskadd">
+        <input type="text" id="taskInput" placeholder="Nova tarefa… (ex.: bater o ponto)" maxlength="80">
+        <button class="btn btn-primary" style="flex:none;min-width:0" id="taskAddBtn">＋</button>
+      </div>
+      <div id="taskList"></div>
+    </div>
+
+    <div class="card">
+      <h2>Refeições <span class="tag" id="mealTag">0/3</span></h2>
+      <div class="meals" id="mealList"></div>
+      <div class="progressbar"><div id="mealBar" style="width:0%"></div></div>
+    </div>
+
+    <div class="card">
+      <h2>Cronômetro &amp; Timer</h2>
+      <div class="seg" style="margin-bottom:10px">
+        <button class="active" data-c="cron">Cronômetro</button>
+        <button data-c="timer">Timer</button>
+      </div>
+
+      <div id="paneCron">
+        <div class="clock" id="cronClock">00:00:00</div>
+        <div class="crow">
+          <button class="btn btn-primary" style="flex:none;min-width:110px" id="cronStart">Iniciar</button>
+          <button class="btn btn-ghost" id="cronLap">Marcar</button>
+          <button class="btn btn-gray-ghost" id="cronReset">Zerar</button>
+        </div>
+        <ul class="laps" id="cronLaps"></ul>
+        <div class="hint">Toque em “Marcar” para registrar o horário do relógio — ex.: a hora em que bateu o ponto do almoço.</div>
+      </div>
+
+      <div id="paneTimer" style="display:none">
+        <div class="timerin">
+          <input type="number" id="timerMin" min="0" max="720" value="25" inputmode="numeric"><label>min</label>
+          <input type="number" id="timerSec" min="0" max="59" value="0" inputmode="numeric"><label>seg</label>
+        </div>
+        <div class="clock small" id="timerClock">25:00</div>
+        <div class="crow">
+          <button class="btn btn-primary" style="flex:none;min-width:110px" id="timerStart">Iniciar</button>
+          <button class="btn btn-gray-ghost" id="timerReset">Zerar</button>
+        </div>
+        <div class="hint">Ao terminar, o app toca um alerta e mostra um aviso (com o app aberto).</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Anotação do dia</h2>
+      <textarea id="noteInput" placeholder="Como você está hoje? Efeitos do remédio, foco, humor, sono, apetite…"></textarea>
+      <div class="saved" id="noteSaved">Salvo ✓</div>
+    </div>
+  </section>
+
+  <!-- ===== DASHBOARD ===== -->
+  <section class="screen" id="screen-dash">
+    <div class="grid2" id="statCards"></div>
+
+    <div class="seg" role="tablist" aria-label="Período do dashboard">
+      <button class="active" data-p="semana">Semana</button>
+      <button data-p="mes">Mês</button>
+      <button data-p="ano">Ano</button>
+    </div>
+
+    <div class="card">
+      <h2>Adesão aos medicamentos <span class="tag" id="tagAd">Semana</span></h2>
+      <div class="bigpct"><span class="num" id="pctAd">–</span><span>de adesão no período</span></div>
+      <svg class="chart" id="chartAd" viewBox="0 0 320 120" preserveAspectRatio="none"></svg>
+      <div class="legend" id="legAd">Percentual de doses tomadas por dia.</div>
+    </div>
+
+    <div class="card">
+      <h2>Refeições <span class="tag" id="tagMeals">Semana</span></h2>
+      <svg class="chart" id="chartMeals" viewBox="0 0 320 120" preserveAspectRatio="none"></svg>
+      <div class="legend" id="legMeals">De 0 a 3 refeições marcadas por dia.</div>
+    </div>
+
+    <div class="card">
+      <h2>Dias completos <span class="tag" id="tagFull">Semana</span></h2>
+      <div class="bigpct"><span class="num" id="pctFull">–</span><span>dos dias com tudo feito</span></div>
+      <div class="progressbar"><div id="fullBar" style="width:0%"></div></div>
+      <div class="legend">Dia completo = medicamentos tomados + 3 refeições + tarefas do dia concluídas.</div>
+    </div>
+  </section>
+
+  <!-- ===== HISTÓRICO ===== -->
+  <section class="screen" id="screen-hist">
+    <div class="card">
+      <h2>Registro retroativo</h2>
+      <div class="retrofield">
+        <input type="date" id="retroDate">
+        <button class="btn btn-primary" style="flex:none;min-width:0" id="retroOpen">Abrir dia</button>
+      </div>
+      <div class="hint">Escolha uma data passada para registrar ou corrigir medicamentos, refeições, tarefas e anotação.</div>
+      <div id="retroEditor" style="margin-top:12px"></div>
+    </div>
+    <div id="histList"></div>
+  </section>
+
+  <!-- ===== AJUSTES ===== -->
+  <section class="screen" id="screen-config">
+    <div class="card">
+      <h2>Meus medicamentos</h2>
+      <div class="rowfields">
+        <div class="field"><label for="m1name">Medicamento 1</label><input id="m1name" type="text" placeholder="Ex.: Vitamina D"></div>
+        <div class="field" style="max-width:120px"><label for="m1time">Horário</label><input id="m1time" type="time"></div>
+      </div>
+      <div class="rowfields">
+        <div class="field"><label for="m2name">Medicamento 2</label><input id="m2name" type="text" placeholder="Ex.: Ômega 3"></div>
+        <div class="field" style="max-width:120px"><label for="m2time">Horário</label><input id="m2time" type="time"></div>
+      </div>
+      <button class="btn btn-primary" style="width:100%" id="saveCfg">Salvar medicamentos</button>
+      <div class="saved" id="cfgSaved">Salvo ✓</div>
+    </div>
+
+    <div class="card">
+      <h2>Atalhos e widget do iPhone</h2>
+      <p style="font-size:.85rem;color:var(--muted)">No app Atalhos, crie um atalho “Abrir URL” para cada ação e adicione o <b>widget de Atalhos</b> na tela de início: vira um painel de botões de check, como um widget de tarefas.</p>
+      <code class="url" id="urlMed1"></code>
+      <code class="url" id="urlMed2"></code>
+      <code class="url" id="urlAlmoco"></code>
+      <p class="hint">Troque <b>refeicao=almoco</b> por <b>cafe</b> ou <b>jantar</b>. Funciona quando o app estiver hospedado (HTTPS).</p>
+    </div>
+
+    <div class="card">
+      <h2>Meus dados</h2>
+      <p style="font-size:.85rem;color:var(--muted);margin-bottom:12px">Tudo fica salvo somente neste navegador. Nada é enviado para servidores.</p>
+      <button class="btn btn-ghost" style="width:100%" id="exportCsv">Exportar dados em CSV</button>
+    </div>
+  </section>
+
+  <p class="disclaimer">Este app é apenas para acompanhamento pessoal e não substitui orientação médica. Em caso de dúvidas sobre seus medicamentos, fale com um profissional de saúde.</p>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<nav class="tabbar">
+  <button class="tab active" data-screen="hoje"><span class="ico">☀️</span>Hoje</button>
+  <button class="tab" data-screen="dash"><span class="ico">📊</span>Dashboard</button>
+  <button class="tab" data-screen="hist"><span class="ico">🗓️</span>Histórico</button>
+  <button class="tab" data-screen="config"><span class="ico">⚙️</span>Ajustes</button>
+</nav>
+
+<script>
+(function(){
+"use strict";
+var KEY='meuControleDiario:v1';
+var CRON_KEY='meuControleDiario:cron';
+var TIMER_KEY='meuControleDiario:timer';
+var MEALS=[
+  {id:'cafe',   lbl:'Café da manhã', ico:'☕'},
+  {id:'almoco', lbl:'Almoço',        ico:'🍽️'},
+  {id:'jantar', lbl:'Jantar',        ico:'🌙'}
+];
+var MONTH_LBL=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+
+/* ---------- estado ---------- */
+function defaultState(){
+  return {
+    meds:[{id:'m1',name:'Medicamento 1',time:'08:00'},{id:'m2',name:'Medicamento 2',time:'20:00'}],
+    days:{},
+    firstUse: todayKey()
+  };
+}
+function load(){
+  try{
+    var raw=localStorage.getItem(KEY);
+    if(!raw) return defaultState();
+    var s=JSON.parse(raw);
+    if(!s.meds||!s.days) return defaultState();
+    if(!s.firstUse) s.firstUse=todayKey();
+    return s;
+  }catch(e){ return defaultState(); }
+}
+function save(){ try{ localStorage.setItem(KEY,JSON.stringify(state)); }catch(e){} }
+var state=load();
+
+/* ---------- datas ---------- */
+function pad(n){return (n<10?'0':'')+n;}
+function keyOf(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
+function todayKey(){return keyOf(new Date());}
+function dateFromKey(k){var p=k.split('-');return new Date(+p[0],+p[1]-1,+p[2]);}
+function fmtLong(d){return d.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});}
+function fmtShort(k){var d=dateFromKey(k);return d.toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'2-digit'});}
+function nowHM(){var d=new Date();return pad(d.getHours())+':'+pad(d.getMinutes());}
+function lastNDays(n){
+  var out=[],d=new Date();
+  for(var i=n-1;i>=0;i--){var x=new Date(d);x.setDate(d.getDate()-i);out.push(keyOf(x));}
+  return out;
+}
+
+/* ---------- dia ---------- */
+function getDay(k){
+  if(!state.days[k]){
+    state.days[k]={medLogs:{},meals:{cafe:false,almoco:false,jantar:false},note:'',tasks:[]};
+  }
+  var day=state.days[k];
+  if(!day.tasks) day.tasks=[];
+  state.meds.forEach(function(m){
+    if(!day.medLogs[m.id]) day.medLogs[m.id]={status:'pendente',planned:m.time,real:null};
+  });
+  return day;
+}
+function effStatus(k,log){
+  if(log.status==='pendente' && k<todayKey()) return 'esquecido';
+  return log.status;
+}
+function medsTaken(k){
+  var day=state.days[k]; if(!day) return 0;
+  var n=0; state.meds.forEach(function(m){
+    var l=day.medLogs[m.id]; if(l&&l.status==='tomado') n++;
+  }); return n;
+}
+function mealsDone(k){
+  var day=state.days[k]; if(!day) return 0;
+  return MEALS.reduce(function(a,m){return a+(day.meals[m.id]?1:0);},0);
+}
+function tasksOf(k){ var d=state.days[k]; return (d&&d.tasks)?d.tasks:[]; }
+function tasksDone(k){ return tasksOf(k).filter(function(t){return t.done;}).length; }
+function isComplete(k){
+  var t=tasksOf(k);
+  return medsTaken(k)===state.meds.length && mealsDone(k)===3 && t.every(function(x){return x.done;});
+}
+function inUse(k){ return k>=state.firstUse; }
+
+/* ---------- ações (aceitam data — hoje ou retroativa) ---------- */
+function medOf(id){ return state.meds.filter(function(m){return m.id===id;})[0]; }
+
+window.takeNow=function(k,id){
+  var l=getDay(k).medLogs[id];
+  l.status='tomado'; l.real=(k===todayKey())?nowHM():null;
+  save(); renderAll();
+};
+window.toggleTimeBox=function(k,id){
+  var el=document.getElementById('tb-'+k+'-'+id);
+  if(el) el.classList.toggle('open');
+};
+window.takeAt=function(k,id){
+  var inp=document.getElementById('ti-'+k+'-'+id);
+  var l=getDay(k).medLogs[id];
+  l.status='tomado'; l.real=(inp&&inp.value)?inp.value:null;
+  save(); renderAll();
+};
+window.markForgot=function(k,id){
+  var l=getDay(k).medLogs[id];
+  l.status='esquecido'; l.real=null;
+  save(); renderAll();
+};
+window.undoMed=function(k,id){
+  var l=getDay(k).medLogs[id];
+  l.status='pendente'; l.real=null;
+  save(); renderAll();
+};
+window.toggleMeal=function(k,id){
+  var day=getDay(k);
+  day.meals[id]=!day.meals[id];
+  save(); renderAll();
+};
+window.toggleTask=function(k,tid){
+  var t=tasksOf(k).filter(function(x){return x.id===tid;})[0];
+  if(t){ t.done=!t.done; save(); renderAll(); }
+};
+window.deleteTask=function(k,tid){
+  var day=getDay(k);
+  day.tasks=day.tasks.filter(function(x){return x.id!==tid;});
+  save(); renderAll();
+};
+function addTask(k,text){
+  text=(text||'').trim();
+  if(!text) return;
+  getDay(k).tasks.push({id:'t'+Date.now()+Math.floor(Math.random()*999),text:text,done:false});
+  save(); renderAll();
+}
+window.addTaskRetro=function(k){
+  var inp=document.getElementById('taskInputRetro');
+  if(inp){ addTask(k,inp.value); }
+};
+
+/* ---------- render: hoje ---------- */
+var STATUS_LBL={pendente:'Pendente',tomado:'Tomado',esquecido:'Esquecido'};
+
+function renderHeader(){
+  document.getElementById('hdrDate').textContent=fmtLong(new Date());
+  var k=todayKey();
+  var total=state.meds.length+3+tasksOf(k).length;
+  var done=medsTaken(k)+mealsDone(k)+tasksDone(k);
+  var pct=total?Math.round(done/total*100):0;
+  var C=169.6;
+  document.getElementById('ringFg').setAttribute('stroke-dashoffset',(C-C*pct/100).toFixed(1));
+  document.getElementById('ringVal').textContent=pct+'%';
+}
+
+function renderPend(){
+  var k=todayKey(), day=getDay(k);
+  var pendMeds=state.meds.filter(function(m){return day.medLogs[m.id].status==='pendente';});
+  var pendTasks=tasksOf(k).filter(function(t){return !t.done;});
+  var el=document.getElementById('pendBanner');
+  if(pendMeds.length===0 && pendTasks.length===0){
+    el.innerHTML='<div class="pend ok"><div class="tt">✅ Pendências de hoje: nenhuma!</div>'+
+      '<ul><li><span>Medicamentos e tarefas de hoje já foram registrados.</span></li></ul></div>';
+    return;
+  }
+  var items='';
+  pendMeds.forEach(function(m){
+    items+='<li>💊 '+esc(m.name)+' <span>— planejado para '+esc(m.time)+'</span></li>';
+  });
+  pendTasks.slice(0,4).forEach(function(t){
+    items+='<li>☐ '+esc(t.text)+'</li>';
+  });
+  if(pendTasks.length>4) items+='<li><span>… e mais '+(pendTasks.length-4)+' tarefa(s)</span></li>';
+  el.innerHTML='<div class="pend"><div class="tt">⏰ Pendências de hoje</div><ul>'+items+'</ul></div>';
+}
+
+function medCardHtml(k,m){
+  var day=getDay(k);
+  var l=day.medLogs[m.id];
+  var st=(k<todayKey())?effStatus(k,l):l.status;
+  var html='<div class="med"><div class="top"><div>'+
+    '<div class="name">'+esc(m.name)+'</div>'+
+    '<div class="plan">Planejado para '+esc(l.planned||m.time)+'</div></div>'+
+    '<span class="pill '+st+'">'+STATUS_LBL[st]+'</span></div>';
+  var args='\''+k+'\',\''+m.id+'\'';
+  if(l.status==='tomado'){
+    html+='<div class="real">✓ Tomado'+(l.real?' às '+esc(l.real):' (horário não informado)')+'</div>'+
+      '<div class="acts"><button class="btn btn-ghost" onclick="undoMed('+args+')">Desfazer</button></div>';
+  }else if(l.status==='esquecido'){
+    html+='<div class="acts"><button class="btn btn-primary" onclick="takeNow('+args+')">'+(k===todayKey()?'Tomei agora':'Marcar tomado')+'</button>'+
+      '<button class="btn btn-ghost" onclick="undoMed('+args+')">Desfazer</button></div>';
+  }else{
+    html+='<div class="acts">'+
+      '<button class="btn btn-primary" onclick="takeNow('+args+')">'+(k===todayKey()?'Tomei agora':'Marcar tomado')+'</button>'+
+      '<button class="btn btn-ghost" onclick="toggleTimeBox('+args+')">Informar horário</button>'+
+      '<button class="btn btn-gray-ghost" onclick="markForgot('+args+')">Esqueci</button></div>'+
+      '<div class="timebox" id="tb-'+k+'-'+m.id+'">'+
+        '<input type="time" id="ti-'+k+'-'+m.id+'" aria-label="Horário em que tomou">'+
+        '<button class="btn btn-primary" style="flex:none" onclick="takeAt('+args+')">Confirmar</button>'+
+      '</div>'+
+      '<div class="hint">O horário real é opcional — você pode confirmar sem preencher.</div>';
+  }
+  return html+'</div>';
+}
+
+function renderMeds(){
+  var k=todayKey();
+  getDay(k);
+  document.getElementById('medTag').textContent=medsTaken(k)+'/'+state.meds.length;
+  document.getElementById('medList').innerHTML=state.meds.map(function(m){return medCardHtml(k,m);}).join('');
+}
+
+function taskItemHtml(k,t){
+  return '<div class="task'+(t.done?' done':'')+'">'+
+    '<div class="box" role="checkbox" tabindex="0" aria-checked="'+t.done+'" onclick="toggleTask(\''+k+'\',\''+t.id+'\')" '+
+    'onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();toggleTask(\''+k+'\',\''+t.id+'\')}">'+(t.done?'✓':'')+'</div>'+
+    '<div class="txt" onclick="toggleTask(\''+k+'\',\''+t.id+'\')">'+esc(t.text)+'</div>'+
+    '<button class="del" title="Excluir tarefa" onclick="deleteTask(\''+k+'\',\''+t.id+'\')">✕</button></div>';
+}
+
+function renderTasks(){
+  var k=todayKey(), ts=tasksOf(k);
+  document.getElementById('taskTag').textContent=tasksDone(k)+'/'+ts.length;
+  document.getElementById('taskList').innerHTML=ts.length
+    ? ts.map(function(t){return taskItemHtml(k,t);}).join('')
+    : '<div class="emptyline">Sem tarefas hoje. Adicione acima para começar. 🎯</div>';
+}
+
+function renderMeals(){
+  var k=todayKey(), day=getDay(k), n=mealsDone(k);
+  document.getElementById('mealTag').textContent=n+'/3';
+  document.getElementById('mealBar').style.width=(n/3*100)+'%';
+  document.getElementById('mealList').innerHTML=MEALS.map(function(m){
+    var done=day.meals[m.id];
+    return '<div class="meal'+(done?' done':'')+'" role="checkbox" tabindex="0" aria-checked="'+done+'" '+
+      'onclick="toggleMeal(\''+k+'\',\''+m.id+'\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();toggleMeal(\''+k+'\',\''+m.id+'\')}">'+
+      '<div class="box">'+(done?'✓':'')+'</div><div class="lbl">'+m.lbl+'</div><div class="ico">'+m.ico+'</div></div>';
+  }).join('');
+}
+
+document.getElementById('taskAddBtn').addEventListener('click',function(){
+  var inp=document.getElementById('taskInput');
+  addTask(todayKey(),inp.value); inp.value=''; inp.focus();
+});
+document.getElementById('taskInput').addEventListener('keydown',function(e){
+  if(e.key==='Enter'){ addTask(todayKey(),this.value); this.value=''; }
+});
+
+var noteTimer=null;
+function bindNote(){
+  var ta=document.getElementById('noteInput');
+  ta.value=getDay(todayKey()).note||'';
+  ta.addEventListener('input',function(){
+    getDay(todayKey()).note=ta.value;
+    clearTimeout(noteTimer);
+    noteTimer=setTimeout(function(){
+      save();
+      var s=document.getElementById('noteSaved');
+      s.classList.add('show');
+      setTimeout(function(){s.classList.remove('show');},1500);
+      renderHist();
+    },500);
+  });
+}
+
+/* ---------- cronômetro ---------- */
+var cron={running:false,startEpoch:0,acc:0,laps:[]};
+try{ var c=JSON.parse(localStorage.getItem(CRON_KEY)); if(c) cron=c; }catch(e){}
+function cronSave(){ try{ localStorage.setItem(CRON_KEY,JSON.stringify(cron)); }catch(e){} }
+function cronElapsed(){ return cron.acc + (cron.running ? Date.now()-cron.startEpoch : 0); }
+function fmtElapsed(ms){
+  var s=Math.floor(ms/1000);
+  return pad(Math.floor(s/3600))+':'+pad(Math.floor(s/60)%60)+':'+pad(s%60);
+}
+function cronRender(){
+  document.getElementById('cronClock').textContent=fmtElapsed(cronElapsed());
+  document.getElementById('cronStart').textContent=cron.running?'Pausar':(cron.acc>0?'Continuar':'Iniciar');
+  document.getElementById('cronLaps').innerHTML=cron.laps.map(function(l,i){
+    return '<li><span>Marca '+(i+1)+' · às '+esc(l.at)+'</span><b>'+fmtElapsed(l.ms)+'</b></li>';
+  }).join('');
+}
+document.getElementById('cronStart').addEventListener('click',function(){
+  if(cron.running){ cron.acc=cronElapsed(); cron.running=false; }
+  else{ cron.startEpoch=Date.now(); cron.running=true; }
+  cronSave(); cronRender();
+});
+document.getElementById('cronLap').addEventListener('click',function(){
+  cron.laps.push({ms:cronElapsed(),at:nowHM()});
+  cronSave(); cronRender();
+  toast('⏱️ Marca registrada às '+nowHM());
+});
+document.getElementById('cronReset').addEventListener('click',function(){
+  cron={running:false,startEpoch:0,acc:0,laps:[]};
+  cronSave(); cronRender();
+});
+
+/* ---------- timer (contagem regressiva) ---------- */
+var timer={target:0,running:false,fired:false};
+try{ var t=JSON.parse(localStorage.getItem(TIMER_KEY)); if(t) timer=t; }catch(e){}
+function timerSave(){ try{ localStorage.setItem(TIMER_KEY,JSON.stringify(timer)); }catch(e){} }
+var audioCtx=null;
+function beep(){
+  try{
+    if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+    var now=audioCtx.currentTime;
+    for(var i=0;i<3;i++){
+      var o=audioCtx.createOscillator(), g=audioCtx.createGain();
+      o.frequency.value=880; o.type='sine';
+      g.gain.setValueAtTime(.0001,now+i*.5);
+      g.gain.exponentialRampToValueAtTime(.4,now+i*.5+.03);
+      g.gain.exponentialRampToValueAtTime(.0001,now+i*.5+.4);
+      o.connect(g); g.connect(audioCtx.destination);
+      o.start(now+i*.5); o.stop(now+i*.5+.45);
+    }
+  }catch(e){}
+  if(navigator.vibrate) navigator.vibrate([250,120,250,120,400]);
+}
+function fmtCount(ms){
+  var s=Math.max(0,Math.ceil(ms/1000));
+  var h=Math.floor(s/3600);
+  return (h?pad(h)+':':'')+pad(Math.floor(s/60)%60)+':'+pad(s%60);
+}
+function timerRender(){
+  var el=document.getElementById('timerClock');
+  if(timer.running){
+    var left=timer.target-Date.now();
+    if(left<=0){
+      timer.running=false;
+      if(!timer.fired){ timer.fired=true; beep(); toast('⏰ Tempo esgotado!'); }
+      timerSave();
+      el.textContent='00:00';
+    }else el.textContent=fmtCount(left);
+  }else{
+    var m=+document.getElementById('timerMin').value||0;
+    var s=+document.getElementById('timerSec').value||0;
+    el.textContent=fmtCount((m*60+s)*1000);
+  }
+  document.getElementById('timerStart').textContent=timer.running?'Parar':'Iniciar';
+}
+document.getElementById('timerStart').addEventListener('click',function(){
+  if(timer.running){ timer.running=false; }
+  else{
+    var m=+document.getElementById('timerMin').value||0;
+    var s=+document.getElementById('timerSec').value||0;
+    var total=(m*60+s)*1000;
+    if(total<=0) return;
+    if(!audioCtx){ try{ audioCtx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} }
+    timer.target=Date.now()+total; timer.running=true; timer.fired=false;
+  }
+  timerSave(); timerRender();
+});
+document.getElementById('timerReset').addEventListener('click',function(){
+  timer={target:0,running:false,fired:false};
+  timerSave(); timerRender();
+});
+['timerMin','timerSec'].forEach(function(id){
+  document.getElementById(id).addEventListener('input',timerRender);
+});
+document.querySelectorAll('[data-c]').forEach(function(b){
+  b.addEventListener('click',function(){
+    b.parentElement.querySelectorAll('button').forEach(function(x){x.classList.remove('active');});
+    b.classList.add('active');
+    document.getElementById('paneCron').style.display=b.dataset.c==='cron'?'':'none';
+    document.getElementById('paneTimer').style.display=b.dataset.c==='timer'?'':'none';
+  });
+});
+setInterval(function(){
+  if(cron.running) cronRender();
+  if(timer.running) timerRender();
+},250);
+
+/* ---------- dashboard ---------- */
+var period='semana';
+var PERIOD_LBL={semana:'Semana',mes:'Mês',ano:'Ano'};
+var weekLbl=['dom','seg','ter','qua','qui','sex','sáb'];
+
+function periodDays(){
+  if(period==='semana') return lastNDays(7);
+  if(period==='mes')    return lastNDays(30);
+  return lastNDays(365);
+}
+function buckets(){
+  var keys=periodDays();
+  if(period!=='ano'){
+    return keys.map(function(k){
+      return { lbl: period==='semana'?weekLbl[dateFromKey(k).getDay()]:'', days:[k] };
+    });
+  }
+  var map={},order=[];
+  keys.forEach(function(k){
+    var mk=k.slice(0,7);
+    if(!map[mk]){map[mk]={lbl:MONTH_LBL[+k.slice(5,7)-1],days:[]};order.push(mk);}
+    map[mk].days.push(k);
+  });
+  return order.map(function(mk){return map[mk];});
+}
+function bucketAdherence(b){
+  var taken=0,total=0;
+  b.days.forEach(function(k){ if(inUse(k)){ total+=state.meds.length; taken+=medsTaken(k); } });
+  return total?Math.round(taken/total*100):null;
+}
+function bucketMeals(b){
+  var sum=0,n=0;
+  b.days.forEach(function(k){ if(inUse(k)){sum+=mealsDone(k);n++;} });
+  return n?+(sum/n).toFixed(2):null;
+}
+function barChart(svgId,data,maxVal,opts){
+  opts=opts||{};
+  var svg=document.getElementById(svgId);
+  var W=320,H=svg.viewBox.baseVal.height,padB=opts.labels?18:6,padT=6;
+  var n=data.length,gap=opts.gap!==undefined?opts.gap:6;
+  var bw=Math.max(1,(W-gap*(n-1))/n);
+  var h='';
+  data.forEach(function(d,i){
+    var x=i*(bw+gap);
+    var isNull=(d.v===null||d.v===undefined);
+    var frac=(!isNull&&maxVal)?Math.max(0,Math.min(1,d.v/maxVal)):0;
+    var bh=isNull?2:Math.max(d.v>0?4:2,frac*(H-padB-padT));
+    var y=H-padB-bh;
+    var col=isNull?'#EFE2E6':(frac>=1?'#7C1D3A':(frac>0?'#C4798F':'#EFE2E6'));
+    h+='<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+bh.toFixed(1)+'" rx="'+Math.min(3,bw/2).toFixed(1)+'" fill="'+col+'"/>';
+    if(opts.labels&&d.lbl) h+='<text x="'+(x+bw/2).toFixed(1)+'" y="'+(H-4)+'" font-size="9" font-family="Manrope" fill="#B08F9A" text-anchor="middle">'+d.lbl+'</text>';
+  });
+  svg.innerHTML=h;
+}
+function renderDash(){
+  var k=todayKey();
+  var pendToday=state.meds.filter(function(m){return getDay(k).medLogs[m.id].status==='pendente';}).length;
+  var streak=0, d=new Date();
+  if(!isComplete(keyOf(d))) d.setDate(d.getDate()-1);
+  while(inUse(keyOf(d)) && isComplete(keyOf(d))){streak++;d.setDate(d.getDate()-1);}
+  var ts=tasksOf(k);
+  var cards=[
+    {n:medsTaken(k),lbl:'Remédios tomados hoje',cls:'green'},
+    {n:pendToday,lbl:'Remédios pendentes hoje',cls:pendToday?'amber':'green'},
+    {n:mealsDone(k)+'/3',lbl:'Refeições feitas hoje',cls:'green'},
+    {n:tasksDone(k)+'/'+ts.length,lbl:'Tarefas concluídas hoje',cls:(ts.length&&tasksDone(k)<ts.length)?'amber':'green'},
+    {n:streak+' 🔥',lbl:'Sequência de dias completos',cls:'green',wide:true}
+  ];
+  document.getElementById('statCards').innerHTML=cards.map(function(c){
+    return '<div class="stat '+c.cls+(c.wide?' wide':'')+'"><div class="num">'+c.n+'</div><div class="lbl">'+c.lbl+'</div></div>';
+  }).join('');
+
+  ['tagAd','tagMeals','tagFull'].forEach(function(id){
+    document.getElementById(id).textContent=PERIOD_LBL[period];
+  });
+
+  var bs=buckets();
+  var gap=period==='semana'?10:(period==='mes'?3:8);
+  var labels=(period!=='mes');
+
+  var taken=0,total=0;
+  periodDays().forEach(function(kk){
+    if(!inUse(kk))return;
+    total+=state.meds.length; taken+=medsTaken(kk);
+  });
+  document.getElementById('pctAd').textContent=total?Math.round(taken/total*100)+'%':'–';
+
+  barChart('chartAd',bs.map(function(b){return {v:bucketAdherence(b),lbl:b.lbl};}),100,{labels:labels,gap:gap});
+  document.getElementById('legAd').textContent=
+    period==='ano'?'Percentual de doses tomadas por mês (últimos 12 meses).':'Percentual de doses tomadas por dia.';
+
+  barChart('chartMeals',bs.map(function(b){return {v:bucketMeals(b),lbl:b.lbl};}),3,{labels:labels,gap:gap});
+  document.getElementById('legMeals').textContent=
+    period==='ano'?'Média de refeições por dia em cada mês (0 a 3).':'De 0 a 3 refeições marcadas por dia.';
+
+  var used=periodDays().filter(inUse);
+  var full=used.filter(isComplete).length;
+  var pf=used.length?Math.round(full/used.length*100):0;
+  document.getElementById('pctFull').textContent=pf+'%';
+  document.getElementById('fullBar').style.width=pf+'%';
+}
+document.querySelectorAll('[data-p]').forEach(function(b){
+  b.addEventListener('click',function(){
+    b.parentElement.querySelectorAll('button').forEach(function(x){x.classList.remove('active');});
+    b.classList.add('active');
+    period=b.dataset.p;
+    renderDash();
+  });
+});
+
+/* ---------- registro retroativo ---------- */
+var retroKey=null;
+document.getElementById('retroDate').max=todayKey();
+document.getElementById('retroOpen').addEventListener('click',function(){
+  var v=document.getElementById('retroDate').value;
+  if(!v){ toast('Escolha uma data primeiro'); return; }
+  if(v>todayKey()){ toast('Só é possível registrar datas passadas ou hoje'); return; }
+  retroKey=v;
+  getDay(retroKey); save();
+  renderRetro(); renderHist();
+});
+window.closeRetro=function(){ retroKey=null; renderRetro(); };
+window.retroNote=function(){
+  var ta=document.getElementById('retroNoteInput');
+  if(retroKey&&ta){ getDay(retroKey).note=ta.value; save(); renderHist(); toast('Anotação salva ✓'); }
+};
+function renderRetro(){
+  var el=document.getElementById('retroEditor');
+  if(!retroKey){ el.innerHTML=''; return; }
+  var k=retroKey, day=getDay(k);
+  var html='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">'+
+    '<b style="text-transform:capitalize">'+fmtShort(k)+'</b>'+
+    '<button class="btn-sm btn-ghost" onclick="closeRetro()">Fechar</button></div>';
+  html+=state.meds.map(function(m){return medCardHtml(k,m);}).join('');
+  html+='<div style="margin:12px 0 6px;font-weight:700;font-size:.85rem;color:var(--muted)">Refeições</div><div class="meals">';
+  html+=MEALS.map(function(m){
+    var done=day.meals[m.id];
+    return '<div class="meal'+(done?' done':'')+'" role="checkbox" tabindex="0" aria-checked="'+done+'" onclick="toggleMeal(\''+k+'\',\''+m.id+'\')">'+
+      '<div class="box">'+(done?'✓':'')+'</div><div class="lbl">'+m.lbl+'</div><div class="ico">'+m.ico+'</div></div>';
+  }).join('');
+  html+='</div>';
+  html+='<div style="margin:12px 0 6px;font-weight:700;font-size:.85rem;color:var(--muted)">Tarefas</div>';
+  html+='<div class="taskadd"><input type="text" id="taskInputRetro" placeholder="Adicionar tarefa neste dia…" maxlength="80">'+
+    '<button class="btn btn-primary" style="flex:none;min-width:0" onclick="addTaskRetro(\''+k+'\')">＋</button></div>';
+  html+=tasksOf(k).map(function(t){return taskItemHtml(k,t);}).join('')||'<div class="emptyline">Sem tarefas neste dia.</div>';
+  html+='<div style="margin:12px 0 6px;font-weight:700;font-size:.85rem;color:var(--muted)">Anotação</div>';
+  html+='<textarea id="retroNoteInput" style="min-height:80px">'+esc(day.note||'')+'</textarea>'+
+    '<button class="btn btn-ghost btn-sm" style="margin-top:8px" onclick="retroNote()">Salvar anotação</button>';
+  el.innerHTML=html;
+}
+
+/* ---------- render: histórico ---------- */
+function renderHist(){
+  var keys=Object.keys(state.days).sort().reverse();
+  var el=document.getElementById('histList');
+  if(keys.length===0){
+    el.innerHTML='<div class="card empty">Ainda não há registros.<br>Comece marcando seus medicamentos e refeições na aba Hoje.</div>';
+    return;
+  }
+  el.innerHTML=keys.map(function(k){
+    var day=state.days[k];
+    var medsHtml=state.meds.map(function(m){
+      var l=day.medLogs[m.id]||{status:'pendente',planned:m.time,real:null};
+      var st=effStatus(k,l);
+      return '<div class="row"><span>'+esc(m.name)+' <small style="color:var(--muted)">('+esc(l.planned||m.time)+')</small></span>'+
+        '<span class="pill '+st+'">'+STATUS_LBL[st]+(st==='tomado'&&l.real?' · '+esc(l.real):'')+'</span></div>';
+    }).join('');
+    var mealsHtml='<div class="row"><span>Refeições</span><span style="font-weight:700;color:var(--primary-ink)">'+mealsDone(k)+'/3</span></div>';
+    var ts=tasksOf(k);
+    var tasksHtml=ts.length?'<div class="row"><span>Tarefas</span><span style="font-weight:700;color:var(--primary-ink)">'+tasksDone(k)+'/'+ts.length+'</span></div>':'';
+    var taskDetail=ts.length?'<div style="font-size:.78rem;color:var(--muted);margin-top:4px">'+ts.map(function(t){return (t.done?'✓ ':'☐ ')+esc(t.text);}).join(' · ')+'</div>':'';
+    var mealDetail=MEALS.map(function(m){return (day.meals[m.id]?'✓ ':'✗ ')+m.lbl;}).join(' · ');
+    var noteHtml=day.note?'<div class="note">'+esc(day.note)+'</div>':'';
+    var comp=isComplete(k);
+    return '<details class="day"><summary><span>'+fmtShort(k)+(k===todayKey()?' · hoje':'')+'</span>'+
+      '<span class="mini"><span class="pill '+(comp?'tomado':'pendente')+'">'+(comp?'Completo ✓':medsTaken(k)+'/'+state.meds.length+' 💊 · '+mealsDone(k)+'/3 🍽️')+'</span></span></summary>'+
+      '<div class="body">'+medsHtml+mealsHtml+tasksHtml+
+      '<div style="font-size:.78rem;color:var(--muted);margin-top:6px">'+mealDetail+'</div>'+taskDetail+noteHtml+
+      '<button class="btn-sm btn-ghost" style="margin-top:10px" onclick="openRetroFor(\''+k+'\')">Editar este dia</button>'+
+      '</div></details>';
+  }).join('');
+}
+window.openRetroFor=function(k){
+  document.getElementById('retroDate').value=k;
+  retroKey=k; getDay(k); save();
+  renderRetro();
+  window.scrollTo({top:0,behavior:'smooth'});
+};
+
+/* ---------- ajustes ---------- */
+function renderCfg(){
+  document.getElementById('m1name').value=state.meds[0].name;
+  document.getElementById('m1time').value=state.meds[0].time;
+  document.getElementById('m2name').value=state.meds[1].name;
+  document.getElementById('m2time').value=state.meds[1].time;
+  var base=location.origin+location.pathname;
+  if(location.protocol==='file:') base='https://SEU-SITE/index.html';
+  document.getElementById('urlMed1').textContent=base+'?med=m1&acao=tomar';
+  document.getElementById('urlMed2').textContent=base+'?med=m2&acao=tomar';
+  document.getElementById('urlAlmoco').textContent=base+'?refeicao=almoco';
+}
+document.getElementById('saveCfg').addEventListener('click',function(){
+  state.meds[0].name=document.getElementById('m1name').value.trim()||'Medicamento 1';
+  state.meds[0].time=document.getElementById('m1time').value||'08:00';
+  state.meds[1].name=document.getElementById('m2name').value.trim()||'Medicamento 2';
+  state.meds[1].time=document.getElementById('m2time').value||'20:00';
+  var day=getDay(todayKey());
+  state.meds.forEach(function(m){
+    var l=day.medLogs[m.id];
+    if(l&&l.status==='pendente') l.planned=m.time;
+  });
+  save(); renderAll();
+  var s=document.getElementById('cfgSaved');
+  s.classList.add('show'); setTimeout(function(){s.classList.remove('show');},1500);
+});
+
+/* ---------- exportar CSV ---------- */
+document.getElementById('exportCsv').addEventListener('click',function(){
+  var q=function(v){v=(v===null||v===undefined)?'':String(v);return '"'+v.replace(/"/g,'""')+'"';};
+  var rows=[['data','tipo','item','horario_planejado','horario_real','status_ou_valor'].map(q).join(';')];
+  Object.keys(state.days).sort().forEach(function(k){
+    var day=state.days[k];
+    state.meds.forEach(function(m){
+      var l=day.medLogs[m.id]||{status:'pendente',planned:m.time,real:null};
+      rows.push([k,'medicamento',m.name,l.planned||m.time,l.real||'',effStatus(k,l)].map(q).join(';'));
+    });
+    MEALS.forEach(function(m){
+      rows.push([k,'refeicao',m.lbl,'','',day.meals[m.id]?'feita':'nao feita'].map(q).join(';'));
+    });
+    (day.tasks||[]).forEach(function(t){
+      rows.push([k,'tarefa',t.text,'','',t.done?'concluida':'pendente'].map(q).join(';'));
+    });
+    if(day.note) rows.push([k,'anotacao','Anotação do dia','','',day.note].map(q).join(';'));
+  });
+  var blob=new Blob(['\uFEFF'+rows.join('\r\n')],{type:'text/csv;charset=utf-8'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='meu-controle-diario-'+todayKey()+'.csv';
+  document.body.appendChild(a); a.click();
+  setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},300);
+});
+
+/* ---------- navegação ---------- */
+document.querySelectorAll('.tab').forEach(function(t){
+  t.addEventListener('click',function(){
+    document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active');});
+    document.querySelectorAll('.screen').forEach(function(x){x.classList.remove('active');});
+    t.classList.add('active');
+    document.getElementById('screen-'+t.dataset.screen).classList.add('active');
+    if(t.dataset.screen==='dash') renderDash();
+    if(t.dataset.screen==='hist'){ renderHist(); renderRetro(); }
+  });
+});
+
+/* ---------- toast ---------- */
+var toastTimer=null;
+function toast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(function(){t.classList.remove('show');},2600);
+}
+
+/* ---------- ações por URL (Atalhos do iPhone) ---------- */
+function handleUrlActions(){
+  var p=new URLSearchParams(location.search);
+  var changed=false;
+  var med=p.get('med'), acao=p.get('acao'), ref=p.get('refeicao');
+  if(med && acao==='tomar' && medOf(med)){
+    var l=getDay(todayKey()).medLogs[med];
+    if(l.status!=='tomado'){ l.status='tomado'; l.real=nowHM(); changed=true; }
+    toast('💊 '+medOf(med).name+' registrado às '+nowHM());
+  }
+  if(ref && MEALS.some(function(m){return m.id===ref;})){
+    var day=getDay(todayKey());
+    if(!day.meals[ref]){ day.meals[ref]=true; changed=true; }
+    toast('🍽️ '+MEALS.filter(function(m){return m.id===ref;})[0].lbl+' marcado ✓');
+  }
+  if(changed) save();
+  if(med||ref||acao){
+    try{ history.replaceState(null,'',location.pathname); }catch(e){}
+  }
+}
+
+/* ---------- util ---------- */
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+
+function renderAll(){
+  renderHeader(); renderPend(); renderMeds(); renderTasks(); renderMeals(); renderDash(); renderHist();
+  if(retroKey) renderRetro();
+}
+
+/* init */
+getDay(todayKey());
+handleUrlActions();
+save();
+renderAll();
+bindNote();
+renderCfg();
+cronRender();
+timerRender();
+
+/* virada do dia */
+setInterval(function(){
+  if(document.getElementById('hdrDate').dataset.k!==todayKey()){
+    document.getElementById('hdrDate').dataset.k=todayKey();
+    getDay(todayKey()); save(); renderAll();
+    document.getElementById('noteInput').value=getDay(todayKey()).note||'';
+  }
+},30000);
+document.getElementById('hdrDate').dataset.k=todayKey();
+
+/* service worker (PWA) — só funciona em HTTPS ou localhost */
+if('serviceWorker' in navigator && location.protocol!=='file:'){
+  window.addEventListener('load',function(){
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  });
+}
+})();
+</script>
+</body>
+</html>
