@@ -1,21 +1,25 @@
 # Lembrou
 
-App PWA simples para controle pessoal de medicamentos, refeições, tarefas, anotações e hábitos.
+Habit tracker pessoal em PWA, pronto para GitHub Pages.
 
-## Como subir no GitHub Pages
+## Arquivos
 
-1. Crie um repositório no GitHub.
-2. Faça upload de todos os arquivos deste pacote na raiz do repositório.
-3. Vá em **Settings > Pages**.
-4. Em **Build and deployment**, escolha **Deploy from a branch**.
-5. Selecione a branch `main` e a pasta `/root`.
-6. Salve e aguarde o link do GitHub Pages aparecer.
+- `index.html`
+- `manifest.webmanifest`
+- `sw.js`
+- `icon-192.png`
+- `icon-512.png`
+- `apple-touch-icon.png`
 
-## Arquivos principais
+## Publicar no GitHub Pages
 
-- `index.html`: aplicativo.
-- `manifest.webmanifest`: configuração para instalar como app/PWA.
-- `sw.js`: service worker para cache básico.
-- `icon-192.png`, `icon-512.png`, `apple-touch-icon.png`: ícones do app.
+1. Suba todos os arquivos na raiz do repositório.
+2. Vá em **Settings > Pages**.
+3. Em **Build and deployment**, escolha **Deploy from a branch**.
+4. Branch: `main`.
+5. Pasta: `/root`.
+6. Salve.
 
-Os dados ficam salvos no navegador pelo `localStorage`.
+## Atalhos do iPhone
+
+Depois que estiver publicado, use as URLs rápidas geradas em **Mais > Atalhos rápidos** para marcar hábitos sem abrir o app manualmente.

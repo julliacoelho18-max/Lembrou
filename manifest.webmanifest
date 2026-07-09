@@ -1,12 +1,12 @@
 {
   "name": "Lembrou",
   "short_name": "Lembrou",
-  "description": "Controle pessoal de medicamentos, refeições, tarefas, anotações e hábitos.",
+  "description": "Habit tracker pessoal para registrar hábitos, humor, foco e progresso.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#FAF5F6",
-  "theme_color": "#7C1D3A",
+  "background_color": "#FFF8F5",
+  "theme_color": "#6E1028",
   "orientation": "portrait",
   "icons": [
     {

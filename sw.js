@@ -1,4 +1,4 @@
-const CACHE_NAME = 'lembrou-v1';
+const CACHE_NAME = 'lembrou-v2';
 const ASSETS = [
   './',
   './index.html',
@@ -24,14 +24,10 @@ self.addEventListener('activate', event => {
 
 self.addEventListener('fetch', event => {
   const request = event.request;
-
   if (request.method !== 'GET') return;
 
-  // Para navegação direta e URLs com parâmetros dos Atalhos do iPhone.
   if (request.mode === 'navigate') {
-    event.respondWith(
-      fetch(request).catch(() => caches.match('./index.html'))
-    );
+    event.respondWith(fetch(request).catch(() => caches.match('./index.html')));
     return;
   }
 
