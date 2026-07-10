@@ -1,7 +1,7 @@
 {
   "name": "Lembrou",
   "short_name": "Lembrou",
-  "description": "Habit tracker pessoal para registrar hábitos, humor, foco e progresso.",
+  "description": "Habit tracker pessoal para lembrar, registrar, manter consistência e retomar sem cobrança.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
