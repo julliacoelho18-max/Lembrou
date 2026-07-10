@@ -1,25 +1,16 @@
 # Lembrou
 
-Habit tracker pessoal em PWA, pronto para GitHub Pages.
+Esta versão está preparada para GitHub Pages usando a pasta `/docs`.
 
-## Arquivos
+## Como publicar
 
-- `index.html`
-- `manifest.webmanifest`
-- `sw.js`
-- `icon-192.png`
-- `icon-512.png`
-- `apple-touch-icon.png`
+1. Suba a pasta `docs` para a raiz do repositório.
+2. No GitHub, vá em **Settings > Pages**.
+3. Configure:
+   - Source: Deploy from a branch
+   - Branch: main
+   - Folder: /docs
+4. Salve.
+5. Aguarde o deploy.
 
-## Publicar no GitHub Pages
-
-1. Suba todos os arquivos na raiz do repositório.
-2. Vá em **Settings > Pages**.
-3. Em **Build and deployment**, escolha **Deploy from a branch**.
-4. Branch: `main`.
-5. Pasta: `/root`.
-6. Salve.
-
-## Atalhos do iPhone
-
-Depois que estiver publicado, use as URLs rápidas geradas em **Mais > Atalhos rápidos** para marcar hábitos sem abrir o app manualmente.
+O app ficará no link do GitHub Pages do repositório.
