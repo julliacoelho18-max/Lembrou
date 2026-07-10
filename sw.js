@@ -1,4 +1,4 @@
-const CACHE_NAME = 'lembrou-final-v1';
+const CACHE_NAME = 'lembrou-final-v3';
 const ASSETS = [
   './',
   './index.html',
